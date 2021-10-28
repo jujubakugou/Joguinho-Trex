@@ -39,7 +39,7 @@ function preload(){
 
 function setup() {
   
- createCanvas(600, 200);
+ createCanvas(windowWidth, windowHeight);
 
   //criar um sprite do trex
   trex = createSprite(50,180,20,50);
@@ -48,22 +48,22 @@ function setup() {
   trex.scale = 0.5;
 
   //criar um sprite do solo
-  solo = createSprite(200,180,400,20);
+  solo = createSprite(width/2,height/2,400,20);
   solo.addImage(imagemSolo);
   solo.x = solo.width /2;
-  
+    
   //solo invisível
-  soloInvisivel = createSprite(200,195,650,20)
+  soloInvisivel = createSprite(200,height/2+10,650,20)
   soloInvisivel.visible = false
   
   //criar grupos
   grupoNuvens = createGroup();
   grupoObstaculos = createGroup();
   
-  fimDeJogo = createSprite (300,100);
+  fimDeJogo = createSprite (width/2,height/2-100);
   fimDeJogo.addImage(imgFimDeJogo);
   
-  reiniciar = createSprite (300,140);
+  reiniciar = createSprite (width/2,height/2-60);
   reiniciar.addImage(imgReiniciar);
   reiniciar.scale = 0.6
     
@@ -74,9 +74,9 @@ function setup() {
 }
 
 function draw() {
-  background("BlueViolet");
+  background("plum");
   
-  text("Pontuação: " + pontuacao,500,30);
+  text("Pontuação: " + pontuacao,width-100,30);
   
   if (estadoJogo === JOGAR){
     solo.velocityX = -(4 + pontuacao /100);
@@ -95,9 +95,10 @@ function draw() {
     }
 
     //o trex pula quando a tecla espaço é acionada 
-    if(keyDown("space") && trex.y >= 110) {
+    if(touches.length > 0 ||  keyDown("space") && trex.y >= height/2-70) {
       trex.velocityY = -10;
       somJump.play();
+      touches = [];
     }
   
     //gravidade
@@ -134,8 +135,9 @@ function draw() {
       fimDeJogo.visible = true;
       reiniciar.visible = true;
       
-    if ( mousePressedOver(reiniciar)){
+    if (touches.length > 0 || mousePressedOver(reiniciar)){
       reset();
+      touches = [];
     }
       
     }
@@ -156,11 +158,11 @@ function reset(){
 
 function gerarObstaculos(){
   if(frameCount % 60 === 0){
-    obstaculos = createSprite(600,160,10,40);
+    obstaculos = createSprite(width,height/2-10,10,40);
     obstaculos.velocityX = -(4 + pontuacao /100);
-    obstaculos.lifetime = 300;
+    obstaculos.lifetime = 600;
     obstaculos.scale = 0.5;
-    
+
     var aleatorio = Math.round(random(1,6));
     switch(aleatorio) {
       case 1: obstaculos.addImage(obstaculos1);
@@ -185,11 +187,11 @@ function gerarObstaculos(){
 
 function gerarNuvens(){    
   if (frameCount % 60 === 0){
-    nuvem = createSprite(600,100,40,10);
+    nuvem = createSprite(width,100,40,10);
     nuvem.addImage(imagemNuvem);
-    nuvem.velocityX = -(2 + pontuacao /100);
-    nuvem.y = Math.round(random(10,100));
-    nuvem.lifetime = 220;
+    nuvem.velocityX = -(2 + pontuacao /1000);
+    nuvem.y = Math.round(random(10,height/4));
+    nuvem.lifetime = 600;
     
     //profundidade
     nuvem.depth = trex.depth;
